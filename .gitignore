@@ -1,2 +1,2 @@
 /mcp
-/server/src/database/db.sqlite
+/server/src/shared/db/db.sqlite

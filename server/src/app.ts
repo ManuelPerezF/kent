@@ -1,10 +1,19 @@
+import "dotenv/config";
 import express from "express";
+import { authRouter } from "./modules/auth/routes/auth.routes.js";
+import { errorMiddleware } from "./shared/middlewares/error.middleware.js";
 
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
+app.use(express.json());
+
+app.get("/", (_req, res) => {
+  res.json({ ok: true, auth: "/api/auth" });
 });
+
+app.use("/api/auth", authRouter);
+
+app.use(errorMiddleware);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

@@ -1,3 +1,5 @@
+-- Referencia SQL alineada con `src/prisma/schema.prisma`.
+-- Archivo de apoyo / creación manual; el archivo SQLite de desarrollo vive en esta misma carpeta (`db.sqlite`).
 
 PRAGMA foreign_keys = ON;
 

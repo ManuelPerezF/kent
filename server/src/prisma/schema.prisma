@@ -21,7 +21,7 @@ enum TransactionType {
 
 model User {
   id           Int      @id @default(autoincrement())
-  username     String
+  username     String   @unique
   passwordHash String   @map("password_hash")
   createdAt    DateTime @default(now()) @map("created_at")
 
