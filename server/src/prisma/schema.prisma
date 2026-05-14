@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "./client"
@@ -6,4 +5,83 @@ generator client {
 
 datasource db {
   provider = "sqlite"
+}
+
+/// Coincide con `script.sql`: CHECK en `Account.type`.
+enum AccountType {
+  EFECTIVO
+  TARJETA
+}
+
+/// Coincide con `script.sql`: CHECK en `transactions.type`.
+enum TransactionType {
+  INGRESO
+  GASTO
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  categories    Category[]
+  transactions  Transaction[]
+  subscriptions Subscription[]
+}
+
+model Account {
+  id             Int         @id @default(autoincrement())
+  type           AccountType
+  initialBalance Float       @default(0) @map("initial_balance")
+
+  transactions  Transaction[]
+  subscriptions Subscription[]
+}
+
+model Category {
+  id     Int     @id @default(autoincrement())
+  userId Int     @map("user_id")
+  name   String
+  color  String?
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions  Transaction[]
+  subscriptions Subscription[]
+}
+
+model Transaction {
+  id         Int             @id @default(autoincrement())
+  userId     Int             @map("user_id")
+  accountId  Int             @map("account_id")
+  categoryId Int             @map("category_id")
+  type       TransactionType
+  amount     Float
+  occurredAt DateTime        @map("occurred_at")
+  note       String?
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account  Account  @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@map("transactions")
+}
+
+model Subscription {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @map("user_id")
+  accountId       Int      @map("account_id")
+  categoryId      Int      @map("category_id")
+  name            String
+  amount          Float
+  nextBillingDate DateTime @map("next_billing_date")
+  active          Int      @default(1)
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account  Account  @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([nextBillingDate])
+  @@map("subscription")
 }
