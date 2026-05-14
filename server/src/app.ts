@@ -7,10 +7,6 @@ const app = express();
 
 app.use(express.json());
 
-app.get("/", (_req, res) => {
-  res.json({ ok: true, auth: "/api/auth" });
-});
-
 app.use("/api/auth", authRouter);
 
 app.use(errorMiddleware);
