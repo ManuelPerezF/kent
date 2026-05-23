@@ -138,3 +138,115 @@
     @apply font-sans;
     }
 }
+
+@layer components {
+  .auth-switch {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+  }
+
+  .auth-switch-link {
+    border: none;
+    background: transparent;
+    padding: 0;
+    font: inherit;
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+    transition: opacity 160ms ease;
+  }
+
+  .auth-switch-link:hover {
+    opacity: 0.85;
+  }
+
+  .auth-forms {
+    display: grid;
+  }
+
+  .auth-forms form {
+    grid-area: 1 / 1;
+    display: grid;
+    gap: 14px;
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+    transition:
+      opacity 160ms ease,
+      transform 160ms ease;
+  }
+
+  .auth-forms form.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .field-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted-foreground);
+  }
+
+  .field {
+    margin-top: 0.25rem;
+    height: 34px;
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--card);
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 160ms ease;
+  }
+
+  .field:hover,
+  .field:focus {
+    border-color: var(--accent);
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+
+  .checkbox-row input {
+    accent-color: var(--accent);
+  }
+
+  .auth-message {
+    font-size: 0.875rem;
+    color: var(--destructive);
+  }
+
+  .primary-btn {
+    height: 34px;
+    width: 100%;
+    background: var(--foreground);
+    color: var(--card);
+    font-size: 0.875rem;
+    font-weight: 650;
+    transition: background-color 160ms ease;
+  }
+
+  .primary-btn:hover:not(:disabled) {
+    background: var(--accent);
+  }
+
+  .primary-btn:disabled {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-forms form,
+  .auth-switch-link {
+    transition: none;
+  }
+}

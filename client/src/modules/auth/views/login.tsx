@@ -1,9 +1,14 @@
-import LoginForm from '../components/loginForm'
+import { useLocation } from "react-router-dom";
 
-export default function Login() { 
-    return (
-        <div className="flex flex-col items-center justify-center h-screen">
-            <LoginForm />
-        </div>
-    )
-}   
+import AuthPanel from "../components/authPanel";
+
+export default function Login() {
+  const { pathname } = useLocation();
+  const initialMode = pathname === "/register" ? "register" : "login";
+
+  return (
+    <div className="flex h-screen items-center justify-center">
+      <AuthPanel key={pathname} initialMode={initialMode} />
+    </div>
+  );
+}

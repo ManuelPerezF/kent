@@ -1,3 +1,4 @@
 /mcp
 /server/src/shared/db/db.sqlite
 styles.md
+/client/.env
