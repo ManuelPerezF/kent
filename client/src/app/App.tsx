@@ -1,7 +1,7 @@
 import { createHashRouter, Navigate, RouterProvider } from "react-router-dom";
 
 import Login from "@/modules/auth/views/login";
-import Home from "@/modules/auth/views/home";
+import Home from "@/modules/home/views/home";
 
 const router = createHashRouter([
   {

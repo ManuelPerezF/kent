@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-import { authStorage } from "../lib/authStorage";
+import { authStorage } from "../../auth/lib/authStorage";
 
 export default function Home() {
   const user = authStorage.getUser();
