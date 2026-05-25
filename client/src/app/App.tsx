@@ -2,6 +2,8 @@ import { createHashRouter, Navigate, RouterProvider } from "react-router-dom";
 
 import Login from "@/modules/auth/views/login";
 import Home from "@/modules/home/views/home";
+import Movimientos from "@/modules/movimientos/views/movimientos";
+import Reportes from "@/modules/reportes/views/reportes";
 
 const router = createHashRouter([
   {
@@ -19,6 +21,14 @@ const router = createHashRouter([
   {
     path: "/home",
     element: <Home />,
+  },
+  {
+    path: "/movimientos",
+    element: <Movimientos />,
+  },
+  {
+    path: "/reportes",
+    element: <Reportes />,
   },
 ]);
 

@@ -129,10 +129,6 @@
   body {
     @apply bg-background text-foreground;
     font-variant-numeric: tabular-nums;
-    background-image:
-      linear-gradient(var(--border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 42px 42px;
     }
   html {
     @apply font-sans;
@@ -140,6 +136,20 @@
 }
 
 @layer components {
+  .auth-page {
+    min-height: 100vh;
+    background-color: var(--background);
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+
+  .app-shell {
+    background-color: var(--sidebar);
+    color: var(--sidebar-foreground);
+  }
+
   .auth-switch {
     font-size: 0.875rem;
     color: var(--muted-foreground);

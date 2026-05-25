@@ -2,3 +2,4 @@
 /server/src/shared/db/db.sqlite
 styles.md
 /client/.env
+.DS_Store

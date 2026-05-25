@@ -7,7 +7,7 @@ export default function Login() {
   const initialMode = pathname === "/register" ? "register" : "login";
 
   return (
-    <div className="flex h-screen items-center justify-center">
+    <div className="auth-page flex h-screen items-center justify-center">
       <AuthPanel key={pathname} initialMode={initialMode} />
     </div>
   );
