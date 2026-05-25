@@ -5,6 +5,7 @@ import Home from "@/modules/home/views/home";
 import Movimientos from "@/modules/movimientos/views/movimientos";
 import Reportes from "@/modules/reportes/views/reportes";
 import Suscripciones from "@/modules/suscripciones/views/suscripciones";
+import Cuentas from "@/modules/cuentas/views/cuentas";
 
 const router = createHashRouter([
   {
@@ -35,6 +36,10 @@ const router = createHashRouter([
     path: "/suscripciones",
     element: <Suscripciones />,
   },
+  {
+    path: "/cuentas",
+    element: <Cuentas />,
+  }
 ]);
 
 export default function App() {
