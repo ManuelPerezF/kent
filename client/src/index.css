@@ -146,8 +146,45 @@
   }
 
   .app-shell {
-    background-color: var(--sidebar);
-    color: var(--sidebar-foreground);
+    background-color: var(--card);
+  }
+
+  .sidebar {
+    background-color: var(--background);
+    color: var(--foreground);
+    border-right: 1px solid var(--border);
+  }
+
+  .sidebar-nav-link {
+    min-height: 34px;
+    border: 1px solid transparent;
+    background: transparent;
+    transition:
+      border-color 160ms ease,
+      background-color 160ms ease;
+  }
+
+  .sidebar-nav-link:hover {
+    border-color: var(--border);
+    background-color: var(--card);
+  }
+
+  .sidebar-nav-link[aria-current="page"] {
+    border-color: var(--foreground);
+    background-color: var(--card);
+  }
+
+  .sidebar-nav-index {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+  }
+
+  .sidebar-nav-label {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--foreground);
   }
 
   .auth-switch {
