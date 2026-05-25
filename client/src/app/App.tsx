@@ -4,6 +4,7 @@ import Login from "@/modules/auth/views/login";
 import Home from "@/modules/home/views/home";
 import Movimientos from "@/modules/movimientos/views/movimientos";
 import Reportes from "@/modules/reportes/views/reportes";
+import Suscripciones from "@/modules/suscripciones/views/suscripciones";
 
 const router = createHashRouter([
   {
@@ -29,6 +30,10 @@ const router = createHashRouter([
   {
     path: "/reportes",
     element: <Reportes />,
+  },
+  {
+    path: "/suscripciones",
+    element: <Suscripciones />,
   },
 ]);
 
