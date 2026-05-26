@@ -12,17 +12,18 @@ export const accountsService = {
     return prisma.account.findMany({
       where: { userId },
       select: accountSelectPublic,
-      orderBy: { id: "asc" },
+      orderBy: { name: "asc" },
     });
   },
 
   async create(userId: number, data: CreateAccountBody): Promise<Account> {
     try {
+      const base = { userId, name: data.name, type: data.type };
       return await prisma.account.create({
         data:
           data.initialBalance === undefined
-            ? { userId, type: data.type }
-            : { userId, type: data.type, initialBalance: data.initialBalance },
+            ? base
+            : { ...base, initialBalance: data.initialBalance },
         select: accountSelectPublic,
       });
     } catch {
