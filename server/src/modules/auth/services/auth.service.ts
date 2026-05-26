@@ -5,9 +5,15 @@ import {
   isPrismaUniqueViolation,
   UnauthorizedError,
 } from "../../../shared/errors/appError.js";
+import { prisma } from "../../../shared/db/prisma.js";
 import { createAccessToken } from "../../../shared/utils/jwt.js";
-import { authRepository, type PublicUser } from "../repositories/auth.repository.js";
-import type { LoginBody, RegisterBody } from "../schemas/auth.schema.js";
+import {
+  type LoginBody,
+  type PublicUser,
+  type RegisterBody,
+  userSelectPublic,
+  userSelectWithHash,
+} from "../models/auth.model.js";
 
 const SALT_ROUNDS = 10;
 
@@ -16,12 +22,15 @@ export interface AuthResponse {
   token: string;
 }
 
-/** Lógica de negocio: hashea contraseñas, genera tokens y lanza errores de dominio. */
+/** Lógica de negocio y acceso a datos de auth. */
 export const authService = {
   async register(data: RegisterBody): Promise<AuthResponse> {
     try {
       const passwordHash = await bcrypt.hash(data.password, SALT_ROUNDS);
-      const user = await authRepository.createUser(data.username, passwordHash);
+      const user = await prisma.user.create({
+        data: { username: data.username, passwordHash },
+        select: userSelectPublic,
+      });
       const token = createAccessToken({ sub: user.id, username: user.username });
       return { user, token };
     } catch (error) {
@@ -33,7 +42,10 @@ export const authService = {
   },
 
   async login(data: LoginBody): Promise<AuthResponse> {
-    const row = await authRepository.findByUsername(data.username);
+    const row = await prisma.user.findUnique({
+      where: { username: data.username },
+      select: userSelectWithHash,
+    });
 
     if (!row) {
       throw new UnauthorizedError("Usuario o contraseña incorrectos.");

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { validateBody } from "../../../shared/utils/validateBody.js";
 import { authController } from "../controllers/auth.controller.js";
-import { loginBodySchema, registerBodySchema } from "../schemas/auth.schema.js";
+import { loginBodySchema, registerBodySchema } from "../models/auth.model.js";
 
 export const authRouter = Router();
 

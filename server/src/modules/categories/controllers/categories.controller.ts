@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import type { AuthenticatedRequest } from "../../../shared/middlewares/auth.middleware.js";
 import { categoriesService } from "../services/categories.service.js";
-import type { CreateCategoryBody } from "../schemas/categories.schema.js";
+import type { CreateCategoryBody } from "../models/categories.model.js";
 
 export const categoriesController = {
   async list(req: Request, res: Response, next: NextFunction): Promise<void> {
