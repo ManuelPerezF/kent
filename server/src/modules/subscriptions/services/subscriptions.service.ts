@@ -29,8 +29,8 @@ export const subscriptionsService = {
       throw new NotFoundError("Categoría no encontrada");
     }
 
-    const account = await prisma.account.findUnique({
-      where: { id: data.accountId },
+    const account = await prisma.account.findFirst({
+      where: { id: data.accountId, userId },
       select: { id: true },
     });
 

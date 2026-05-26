@@ -25,6 +25,7 @@ model User {
   passwordHash String   @map("password_hash")
   createdAt    DateTime @default(now()) @map("created_at")
 
+  accounts      Account[]
   categories    Category[]
   transactions  Transaction[]
   subscriptions Subscription[]
@@ -32,11 +33,15 @@ model User {
 
 model Account {
   id             Int         @id @default(autoincrement())
+  userId         Int         @map("user_id")
   type           AccountType
   initialBalance Float       @default(0) @map("initial_balance")
 
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions  Transaction[]
   subscriptions Subscription[]
+
+  @@index([userId])
 }
 
 model Category {

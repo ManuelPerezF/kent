@@ -10,6 +10,11 @@ export const createAccountBodySchema = z.object({
 
 export type CreateAccountBody = z.infer<typeof createAccountBodySchema>;
 
-export const accountSelectPublic = { id: true, type: true, initialBalance: true } as const;
+export const accountSelectPublic = {
+  id: true,
+  userId: true,
+  type: true,
+  initialBalance: true,
+} as const;
 
 export type Account = Prisma.AccountGetPayload<{ select: typeof accountSelectPublic }>;
