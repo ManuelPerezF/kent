@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 import { authRouter } from "./modules/auth/routes/auth.routes.js";
 import { categoriesRouter } from "./modules/categories/routes/categories.routes.js";
+import { subscriptionsRouter } from "./modules/subscriptions/routes/subscriptions.routes.js";
 import { errorMiddleware } from "./shared/middlewares/error.middleware.js";
 
 const app = express();
@@ -12,6 +13,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRouter);
 app.use("/api/categories", categoriesRouter);
+app.use("/api/subscriptions", subscriptionsRouter);
 
 app.use(errorMiddleware);
 
