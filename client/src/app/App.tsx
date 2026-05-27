@@ -3,6 +3,7 @@ import { createHashRouter, Navigate, RouterProvider } from "react-router-dom";
 import Login from "@/modules/auth/views/login";
 import Home from "@/modules/home/views/home";
 import Movimientos from "@/modules/movimientos/views/movimientos";
+import Presupuestos from "@/modules/presupuestos/views/presupuestos";
 import Reportes from "@/modules/reportes/views/reportes";
 import Suscripciones from "@/modules/suscripciones/views/suscripciones";
 import Cuentas from "@/modules/cuentas/views/cuentas";
@@ -27,6 +28,10 @@ const router = createHashRouter([
   {
     path: "/movimientos",
     element: <Movimientos />,
+  },
+  {
+    path: "/presupuestos",
+    element: <Presupuestos />,
   },
   {
     path: "/reportes",

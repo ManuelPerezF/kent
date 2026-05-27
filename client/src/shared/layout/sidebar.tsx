@@ -3,9 +3,10 @@ import { NavLink } from "react-router-dom";
 const NAV_ITEMS = [
   { index: 1, label: "Resumen", path: "/home" },
   { index: 2, label: "Movimientos", path: "/movimientos" },
-  { index: 3, label: "Suscripciones", path: "/suscripciones" },
-  { index: 4, label: "Cuentas", path: "/cuentas" },
-  { index: 5, label: "Reportes", path: "/reportes" },
+  { index: 3, label: "Presupuestos", path: "/presupuestos" },
+  { index: 4, label: "Suscripciones", path: "/suscripciones" },
+  { index: 5, label: "Cuentas", path: "/cuentas" },
+  { index: 6, label: "Reportes", path: "/reportes" },
 ];
 
 function formatIndex(index: number) {
