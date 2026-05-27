@@ -8,10 +8,9 @@ export const subscriptionsRouter = Router();
 
 subscriptionsRouter.use(authenticateJWT);
 
+subscriptionsRouter.get("/upcoming", subscriptionsController.upcoming);
+
 subscriptionsRouter.get("/", subscriptionsController.list);
 
-subscriptionsRouter.post(
-  "/",
-  validateBody(createSubscriptionBodySchema),
-  subscriptionsController.create,
+subscriptionsRouter.post("/",validateBody(createSubscriptionBodySchema),subscriptionsController.create,
 );

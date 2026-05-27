@@ -24,3 +24,18 @@ export const subscriptionSelectPublic = {
 } as const;
 
 export type Subscription = Prisma.SubscriptionGetPayload<{ select: typeof subscriptionSelectPublic }>;
+
+export interface UpcomingSubscription {
+  id: number;
+  name: string;
+  amount: number;
+  nextBillingDate: Date;
+  accountId: number;
+  accountName: string;
+}
+
+export interface ListUpcomingQuery {
+  from?: unknown;
+  to?: unknown;
+  limit?: number;
+}

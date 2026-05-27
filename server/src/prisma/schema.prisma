@@ -47,10 +47,11 @@ model Account {
 }
 
 model Category {
-  id     Int     @id @default(autoincrement())
-  userId Int     @map("user_id")
-  name   String
-  color  String?
+  id           Int     @id @default(autoincrement())
+  userId       Int     @map("user_id")
+  name         String
+  color        String?
+  monthlyLimit Float?  @map("monthly_limit")
 
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions  Transaction[]

@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { ValidationError } from "../../../shared/errors/appError.js";
 import type { AuthenticatedRequest } from "../../../shared/middlewares/auth.middleware.js";
+import { parseDateRangeQuery } from "../../../shared/utils/dateRange.js";
 import { transactionsService } from "../services/transactions.service.js";
 import type { CreateTransactionBody, ListTransactionsQuery } from "../models/transactions.model.js";
 
@@ -20,6 +21,12 @@ function parseListQuery(req: Request): ListTransactionsQuery {
       throw new ValidationError("type debe ser INGRESO o GASTO");
     }
     query.type = req.query.type;
+  }
+
+  if (req.query.from !== undefined || req.query.to !== undefined) {
+    const { from, to } = parseDateRangeQuery(req.query.from, req.query.to);
+    query.from = from;
+    query.to = to;
   }
 
   return query;

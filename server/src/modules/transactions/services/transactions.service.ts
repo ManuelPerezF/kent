@@ -23,6 +23,9 @@ export const transactionsService = {
         userId,
         ...(query.budgetId !== undefined ? { budgetId: query.budgetId } : {}),
         ...(query.type !== undefined ? { type: query.type } : {}),
+        ...(query.from !== undefined && query.to !== undefined
+          ? { occurredAt: { gte: query.from, lte: query.to } }
+          : {}),
       },
       select: transactionSelectPublic,
       orderBy: { occurredAt: "desc" },

@@ -3,10 +3,12 @@ import {
   NotFoundError,
 } from "../../../shared/errors/appError.js";
 import { prisma } from "../../../shared/db/prisma.js";
+import { parseDateRangeQuery } from "../../../shared/utils/dateRange.js";
 import {
   subscriptionSelectPublic,
   type CreateSubscriptionBody,
   type Subscription,
+  type UpcomingSubscription,
 } from "../models/subscriptions.model.js";
 
 
@@ -54,5 +56,41 @@ export const subscriptionsService = {
     } catch {
       throw new InternalServerError("No se pudo crear la suscripción");
     }
+  },
+
+  async upcoming(
+    userId: number,
+    fromParam?: unknown,
+    toParam?: unknown,
+    limit = 5,
+  ): Promise<UpcomingSubscription[]> {
+    const { from, to } = parseDateRangeQuery(fromParam, toParam);
+
+    const rows = await prisma.subscription.findMany({
+      where: {
+        userId,
+        active: 1,
+        nextBillingDate: { gte: from, lte: to },
+      },
+      select: {
+        id: true,
+        name: true,
+        amount: true,
+        nextBillingDate: true,
+        accountId: true,
+        account: { select: { name: true } },
+      },
+      orderBy: { nextBillingDate: "asc" },
+      take: limit,
+    });
+
+    return rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      amount: row.amount,
+      nextBillingDate: row.nextBillingDate,
+      accountId: row.accountId,
+      accountName: row.account.name,
+    }));
   },
 };

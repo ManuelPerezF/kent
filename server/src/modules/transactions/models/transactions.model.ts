@@ -42,4 +42,6 @@ export type Transaction = Prisma.TransactionGetPayload<{ select: typeof transact
 export interface ListTransactionsQuery {
   budgetId?: number;
   type?: "INGRESO" | "GASTO";
+  from?: Date;
+  to?: Date;
 }

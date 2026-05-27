@@ -18,11 +18,16 @@ export const categoriesService = {
 
   async create(userId: number, data: CreateCategoryBody): Promise<Category> {
     try {
+      const base = { userId, name: data.name };
+      const withColor =
+        data.color === undefined ? base : { ...base, color: data.color };
+      const createData =
+        data.monthlyLimit === undefined
+          ? withColor
+          : { ...withColor, monthlyLimit: data.monthlyLimit };
+
       return await prisma.category.create({
-        data:
-          data.color === undefined
-            ? { userId, name: data.name }
-            : { userId, name: data.name, color: data.color },
+        data: createData,
         select: categorySelectPublic,
       });
     } catch {

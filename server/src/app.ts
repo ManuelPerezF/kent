@@ -5,6 +5,7 @@ import { accountsRouter } from "./modules/accounts/routes/accounts.routes.js";
 import { authRouter } from "./modules/auth/routes/auth.routes.js";
 import { budgetsRouter } from "./modules/budgets/routes/budgets.routes.js";
 import { categoriesRouter } from "./modules/categories/routes/categories.routes.js";
+import { reportsRouter } from "./modules/reports/routes/reports.routes.js";
 import { subscriptionsRouter } from "./modules/subscriptions/routes/subscriptions.routes.js";
 import { transactionsRouter } from "./modules/transactions/routes/transactions.routes.js";
 import { errorMiddleware } from "./shared/middlewares/error.middleware.js";
@@ -18,6 +19,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/accounts", accountsRouter);
 app.use("/api/budgets", budgetsRouter);
 app.use("/api/categories", categoriesRouter);
+app.use("/api/reports", reportsRouter);
 app.use("/api/subscriptions", subscriptionsRouter);
 app.use("/api/transactions", transactionsRouter);
 

@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS "Category" (
   "user_id" INTEGER NOT NULL,
   "name" TEXT NOT NULL,
   "color" TEXT,
+  "monthly_limit" REAL,
   CONSTRAINT "Category_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
