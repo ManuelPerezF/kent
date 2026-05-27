@@ -29,6 +29,7 @@ model User {
   categories    Category[]
   transactions  Transaction[]
   subscriptions Subscription[]
+  budgets       Budget[]
 }
 
 model Account {
@@ -61,16 +62,34 @@ model Transaction {
   userId     Int             @map("user_id")
   accountId  Int             @map("account_id")
   categoryId Int             @map("category_id")
+  budgetId   Int?            @map("budget_id")
   type       TransactionType
   amount     Float
   occurredAt DateTime        @map("occurred_at")
   note       String?
 
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  account  Account  @relation(fields: [accountId], references: [id], onDelete: Restrict)
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account  Account       @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  category Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  budget   Budget? @relation(fields: [budgetId], references: [id], onDelete: SetNull)
 
+  @@index([userId])
+  @@index([budgetId])
   @@map("transactions")
+}
+
+model Budget {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  amount    Float
+  startDate DateTime @map("start_date")
+  endDate   DateTime @map("end_date")
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@index([userId])
+  @@map("budget")
 }
 
 model Subscription {
