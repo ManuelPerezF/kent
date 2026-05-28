@@ -6,8 +6,6 @@ import {
   useState,
   type RefObject,
 } from "react";
-import { useNavigate } from "react-router-dom";
-
 import { authStorage } from "../lib/authStorage";
 import { login, register } from "../services/auth.service";
 
@@ -31,8 +29,6 @@ function focusUsernameInput(
 
 
 export function useAuth(initialMode: AuthMode = "login") {
-  const navigate = useNavigate();
-
   const [mode, setModeState] = useState<AuthMode>(initialMode);
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState("");
@@ -64,7 +60,6 @@ export function useAuth(initialMode: AuthMode = "login") {
       try {
         const session = await login({ username, password });
         authStorage.save(session);
-        navigate("/home");
       } catch (err) {
         const message = getErrorMessage(err, "No se pudo iniciar sesión.");
         setLoginError(message);
@@ -73,7 +68,7 @@ export function useAuth(initialMode: AuthMode = "login") {
         setLoading(false);
       }
     },
-    [navigate],
+    [],
   );
 
   const handleRegister = useCallback(
@@ -95,7 +90,6 @@ export function useAuth(initialMode: AuthMode = "login") {
       try {
         const session = await register({ username, password });
         authStorage.save(session);
-        navigate("/home");
       } catch (err) {
         const message = getErrorMessage(err, "No se pudo crear la cuenta.");
         setRegisterError(message);
@@ -104,7 +98,7 @@ export function useAuth(initialMode: AuthMode = "login") {
         setLoading(false);
       }
     },
-    [navigate],
+    [],
   );
 
   useEffect(() => {

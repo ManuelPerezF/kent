@@ -44,11 +44,15 @@ export const transactionsService = {
 
     const category = await prisma.category.findFirst({
       where: { id: data.categoryId, userId },
-      select: { id: true },
+      select: { id: true, kind: true },
     });
 
     if (!category) {
       throw new NotFoundError("Categoría no encontrada");
+    }
+
+    if (category.kind !== data.type) {
+      throw new ValidationError("La categoría no corresponde al tipo de movimiento");
     }
 
     if (data.type === "INGRESO" && data.budgetId !== undefined) {

@@ -3,3 +3,5 @@
 styles.md
 /client/.env
 .DS_Store
+/.agents
+skills-lock.json

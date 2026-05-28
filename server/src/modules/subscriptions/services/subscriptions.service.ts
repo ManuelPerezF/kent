@@ -1,6 +1,7 @@
 import {
   InternalServerError,
   NotFoundError,
+  ValidationError,
 } from "../../../shared/errors/appError.js";
 import { prisma } from "../../../shared/db/prisma.js";
 import { parseDateRangeQuery } from "../../../shared/utils/dateRange.js";
@@ -24,11 +25,15 @@ export const subscriptionsService = {
   async create(userId: number, data: CreateSubscriptionBody): Promise<Subscription> {
     const category = await prisma.category.findFirst({
       where: { id: data.categoryId, userId },
-      select: { id: true },
+      select: { id: true, kind: true },
     });
 
     if (!category) {
       throw new NotFoundError("Categoría no encontrada");
+    }
+
+    if (category.kind !== "GASTO") {
+      throw new ValidationError("La categoría de una suscripción debe ser de tipo GASTO");
     }
 
     const account = await prisma.account.findFirst({
