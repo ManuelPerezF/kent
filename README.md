@@ -81,21 +81,17 @@ Si no defines `VITE_BACKEND_URL`, el cliente usa `http://localhost:3000`.
 
 ## Desarrollo
 
-Necesitas **dos terminales**: API y cliente (Vite + Electron).
-
-**Terminal 1 — API**
+Puedes levantar backend y frontend con un solo comando desde la raíz:
 
 ```bash
-cd server
+npm install
 npm run dev
 ```
 
-**Terminal 2 — Cliente / Electron**
+También puedes seguir usando dos terminales si lo prefieres:
 
-```bash
-cd client
-npm run dev
-```
+- API: `cd server && npm run dev`
+- Cliente / Electron: `cd client && npm run dev`
 
 ## API REST
 
@@ -141,5 +137,5 @@ npm run build
 ## Notas
 
 - La base SQLite por defecto vive en `server/src/shared/db/` (el archivo `.sqlite` está en `.gitignore`).
-- El monorepo no define scripts en la raíz (`package.json` raíz vacío); ejecuta comandos desde `client/` o `server/`.
+- El script raíz `npm run dev` ejecuta servidor y cliente en paralelo con `concurrently`.
 
