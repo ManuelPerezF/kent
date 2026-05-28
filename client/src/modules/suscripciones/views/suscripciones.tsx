@@ -10,7 +10,6 @@ export default function Suscripciones() {
     pausedSubscriptions,
     monthlyAmount,
     nextCharge,
-    upcomingSubscriptions,
     accountMap,
     categoryMap,
     accounts,
@@ -43,7 +42,6 @@ export default function Suscripciones() {
           pausedSubscriptions={pausedSubscriptions}
           monthlyAmount={monthlyAmount}
           nextCharge={nextCharge}
-          upcomingSubscriptions={upcomingSubscriptions}
           accountMap={accountMap}
           categoryMap={categoryMap}
           accounts={accounts}

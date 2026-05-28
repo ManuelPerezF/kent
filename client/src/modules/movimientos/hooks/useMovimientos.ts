@@ -110,9 +110,9 @@ export function useMovimientos() {
     });
   }, [accountMap, categoryFilter, categoryMap, search, state.transactions, typeFilter]);
 
-  const expenseTotal = filteredTransactions
-    .filter((item) => item.type === "GASTO")
-    .reduce((sum, item) => sum + item.amount, 0);
+  const totalAmount = filteredTransactions.reduce((sum, item) => {
+    return item.type === "INGRESO" ? sum + item.amount : sum - item.amount;
+  }, 0);
 
   const addMovement = useCallback(async (payload: CreateTransactionBody) => {
     setCreating(true);
@@ -153,7 +153,7 @@ export function useMovimientos() {
     filteredTransactions,
     accountMap,
     categoryMap,
-    expenseTotal,
+    totalAmount,
     creating,
     createError,
     addMovement,

@@ -10,7 +10,6 @@ interface SuscripcionesBoardProps {
   pausedSubscriptions: number;
   monthlyAmount: number;
   nextCharge: Subscription | null;
-  upcomingSubscriptions: Subscription[];
   accountMap: Map<number, string>;
   categoryMap: Map<number, string>;
   accounts: Account[];
@@ -60,7 +59,6 @@ export default function SuscripcionesBoard({
   pausedSubscriptions,
   monthlyAmount,
   nextCharge,
-  upcomingSubscriptions,
   accountMap,
   categoryMap,
   accounts,
@@ -77,12 +75,21 @@ export default function SuscripcionesBoard({
   const [nextBillingDate, setNextBillingDate] = useState("");
   const [accountId, setAccountId] = useState<number | "">("");
   const [categoryId, setCategoryId] = useState<number | "">("");
-  const [active, setActive] = useState(true);
 
   const expenseCategories = useMemo(
     () => categories.filter((category) => category.kind === "GASTO"),
     [categories],
   );
+
+  const sortedSubscriptions = useMemo(() => {
+    return [...subscriptions].sort((a, b) => {
+      const dateA = new Date(effectiveNextBillingDate(a.nextBillingDate)).getTime();
+      const dateB = new Date(effectiveNextBillingDate(b.nextBillingDate)).getTime();
+      if (dateA !== dateB) return dateA - dateB;
+      if (a.active !== b.active) return a.active ? -1 : 1;
+      return a.name.localeCompare(b.name, "es");
+    });
+  }, [subscriptions]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -94,13 +101,12 @@ export default function SuscripcionesBoard({
       nextBillingDate,
       accountId,
       categoryId,
-      active,
+      active: true,
     });
 
     setName("");
     setAmount("");
     setNextBillingDate("");
-    setActive(true);
   }
 
   return (
@@ -111,13 +117,16 @@ export default function SuscripcionesBoard({
         description="Kent separa suscripciones de otros recurrentes para revisar portales y estados."
       />
 
-      <form onSubmit={handleSubmit} className="grid gap-3 border border-border bg-card p-4 lg:grid-cols-[1.2fr_150px_170px_180px_170px_auto]">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-nowrap items-center gap-2 overflow-x-auto border border-border bg-card p-4"
+      >
         <input
           required
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder="Nombre de la suscripcion"
-          className="h-10 border border-border bg-background px-3 text-sm outline-none focus:border-foreground"
+          className="h-10 min-w-[10rem] flex-1 border border-border bg-background px-3 text-sm outline-none focus:border-foreground"
         />
         <input
           required
@@ -125,14 +134,14 @@ export default function SuscripcionesBoard({
           onChange={(event) => setAmount(event.target.value)}
           placeholder="Monto"
           inputMode="decimal"
-          className="h-10 border border-border bg-background px-3 text-sm outline-none focus:border-foreground"
+          className="h-10 w-[5.5rem] shrink-0 border border-border bg-background px-3 text-sm outline-none focus:border-foreground"
         />
         <input
           required
           value={nextBillingDate}
           onChange={(event) => setNextBillingDate(event.target.value)}
           type="date"
-          className="h-10 border border-border bg-background px-3 text-sm outline-none focus:border-foreground"
+          className="h-10 w-[9.5rem] shrink-0 border border-border bg-background px-3 text-sm outline-none focus:border-foreground"
         />
         <select
           required
@@ -140,7 +149,7 @@ export default function SuscripcionesBoard({
           onChange={(event) =>
             setAccountId(event.target.value === "" ? "" : Number(event.target.value))
           }
-          className="h-10 border border-border bg-background px-3 text-sm outline-none focus:border-foreground"
+          className="h-10 w-[8.5rem] shrink-0 border border-border bg-background px-3 text-sm outline-none focus:border-foreground"
         >
           <option value="">Cuenta</option>
           {accounts.map((account) => (
@@ -155,7 +164,7 @@ export default function SuscripcionesBoard({
           onChange={(event) =>
             setCategoryId(event.target.value === "" ? "" : Number(event.target.value))
           }
-          className="h-10 border border-border bg-background px-3 text-sm outline-none focus:border-foreground"
+          className="h-10 w-[8.5rem] shrink-0 border border-border bg-background px-3 text-sm outline-none focus:border-foreground"
         >
           <option value="">Categoria</option>
           {expenseCategories.map((category) => (
@@ -164,73 +173,113 @@ export default function SuscripcionesBoard({
             </option>
           ))}
         </select>
-        <Button type="submit" className="h-10 rounded-none px-5 text-sm" disabled={creating}>
+        <Button
+          type="submit"
+          className="h-10 shrink-0 rounded-none px-5 text-sm whitespace-nowrap"
+          disabled={creating}
+        >
           {creating ? "Guardando..." : "Crear suscripcion"}
         </Button>
-        <label className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-          <input
-            type="checkbox"
-            checked={active}
-            onChange={(event) => setActive(event.target.checked)}
-            className="accent-emerald-600"
-          />
-          Activa
-        </label>
       </form>
       {createError ? <p className="text-sm text-destructive">{createError}</p> : null}
       {toggleError ? <p className="text-sm text-destructive">{toggleError}</p> : null}
 
       <div className="grid gap-3 md:grid-cols-3">
         <article className="border border-border bg-card p-4">
-          <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">Mensual activo</p>
-          <p className="mt-2 text-5xl font-semibold tracking-tight">{currency(monthlyAmount)}</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+            Mensual activo
+          </p>
+          <p className="mt-2 text-4xl font-semibold tracking-tight lg:text-5xl">{currency(monthlyAmount)}</p>
         </article>
         <article className="border border-border bg-card p-4">
-          <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">Proximo cargo</p>
-          <p className="mt-2 text-5xl font-semibold tracking-tight">
-            {nextCharge ? formatDate(nextCharge.nextBillingDate) : "Sin fecha"}
+          <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+            Proximo cargo
           </p>
+          <p className="mt-2 text-4xl font-semibold tracking-tight lg:text-5xl">
+            {nextCharge
+              ? formatDate(effectiveNextBillingDate(nextCharge.nextBillingDate))
+              : "Sin fecha"}
+          </p>
+          {nextCharge ? (
+            <p className="mt-1 truncate text-sm text-muted-foreground">
+              {nextCharge.name} · {currency(nextCharge.amount)}
+            </p>
+          ) : null}
         </article>
         <article className="border border-border bg-card p-4">
           <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">En pausa</p>
-          <p className="mt-2 text-5xl font-semibold tracking-tight">{pausedSubscriptions}</p>
+          <p className="mt-2 text-4xl font-semibold tracking-tight lg:text-5xl">{pausedSubscriptions}</p>
         </article>
       </div>
 
-      <div className="grid gap-3 xl:grid-cols-[1.4fr_1fr]">
-        <article className="border border-border bg-card p-4">
-          <ul className="space-y-3">
-            {subscriptions.map((subscription) => {
+      <article className="border border-border bg-card">
+        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3">
+          <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+            Todas las suscripciones
+          </p>
+          <span className="text-xs text-muted-foreground">
+            {subscriptions.length} {subscriptions.length === 1 ? "servicio" : "servicios"}
+          </span>
+        </header>
+
+        {sortedSubscriptions.length === 0 ? (
+          <p className="px-4 py-10 text-center text-sm text-muted-foreground">
+            Aun no tienes suscripciones. Usa el formulario de arriba para registrar la primera.
+          </p>
+        ) : (
+          <ul className="divide-y divide-border">
+            {sortedSubscriptions.map((subscription) => {
               const isActive = Boolean(subscription.active);
+              const nextChargeLabel = formatDate(
+                effectiveNextBillingDate(subscription.nextBillingDate),
+              );
+              const isNext =
+                nextCharge?.id === subscription.id && isActive;
+
               return (
                 <li
                   key={subscription.id}
-                  className="grid grid-cols-[1fr_auto] items-center gap-3 border border-border bg-background px-4 py-3"
+                  className="grid gap-3 px-4 py-4 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_auto_auto] md:items-center"
                 >
-                  <div>
-                    <p className="text-4xl font-semibold tracking-tight">{subscription.name}</p>
-                    <p className="mt-0.5 text-xl text-muted-foreground">
-                      {accountMap.get(subscription.accountId) ?? "Cuenta"} · sig. cobro{" "}
-                      {formatDate(effectiveNextBillingDate(subscription.nextBillingDate))}
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-lg font-semibold tracking-tight">{subscription.name}</p>
+                      {isNext ? (
+                        <span className="border border-amber-200 bg-amber-50 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.06em] text-amber-800">
+                          Proximo
+                        </span>
+                      ) : null}
+                      <span
+                        className={`border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.06em] ${
+                          isActive
+                            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                            : "border-amber-200 bg-amber-50 text-amber-700"
+                        }`}
+                      >
+                        {isActive ? "Activa" : "Pausada"}
+                      </span>
+                    </div>
+                    <p className="mt-0.5 text-sm text-muted-foreground">
+                      {categoryMap.get(subscription.categoryId) ?? "Sin categoria"}
                     </p>
-                    <p className="text-sm text-muted-foreground">
-                      {categoryMap.get(subscription.categoryId) ?? "Categoria sin nombre"}
-                    </p>
-                    <span
-                      className={`mt-2 inline-flex border px-2 py-0.5 text-xs font-medium uppercase tracking-[0.08em] ${
-                        isActive ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"
-                      }`}
-                    >
-                      {isActive ? "Active" : "Paused"}
-                    </span>
                   </div>
-                  <div className="text-right">
-                    <p className="text-5xl font-semibold tracking-tight">{currency(subscription.amount)}</p>
+
+                  <div className="text-sm text-muted-foreground md:text-left">
+                    <p>{accountMap.get(subscription.accountId) ?? "Cuenta"}</p>
+                    <p className="mt-0.5 font-medium text-foreground">Sig. cobro {nextChargeLabel}</p>
+                  </div>
+
+                  <p className="text-2xl font-semibold tracking-tight md:text-right">
+                    {currency(subscription.amount)}
+                    <span className="ml-1 text-sm font-normal text-muted-foreground">/mes</span>
+                  </p>
+
+                  <div className="md:text-right">
                     <button
                       type="button"
                       disabled={togglingId === subscription.id}
                       onClick={() => void onToggleSubscriptionActive(subscription.id, !isActive)}
-                      className="mt-2 border border-border px-4 py-1.5 text-sm font-medium transition-colors hover:border-foreground disabled:opacity-50"
+                      className="w-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-foreground disabled:opacity-50 md:w-auto"
                     >
                       {togglingId === subscription.id
                         ? "Guardando..."
@@ -243,25 +292,8 @@ export default function SuscripcionesBoard({
               );
             })}
           </ul>
-        </article>
-
-        <article className="border border-border bg-card p-4">
-          <h2 className="text-4xl font-semibold tracking-tight">Revision sugerida</h2>
-          <ul className="mt-3 divide-y divide-border border border-border">
-            {upcomingSubscriptions.slice(0, 3).map((item) => (
-              <li key={item.id} className="px-4 py-3">
-                <p className="text-2xl font-semibold tracking-tight">{item.name}</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Cobro: {formatDate(item.nextBillingDate)} · {currency(item.amount)}
-                </p>
-              </li>
-            ))}
-            {upcomingSubscriptions.length === 0 ? (
-              <li className="px-4 py-6 text-sm text-muted-foreground">No hay cobros proximos por revisar.</li>
-            ) : null}
-          </ul>
-        </article>
-      </div>
+        )}
+      </article>
     </section>
   );
 }

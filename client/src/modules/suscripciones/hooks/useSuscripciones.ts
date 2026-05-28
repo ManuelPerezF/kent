@@ -132,7 +132,6 @@ export function useSuscripciones() {
     pausedSubscriptions,
     monthlyAmount,
     nextCharge,
-    upcomingSubscriptions,
     accountMap,
     categoryMap,
     accounts,

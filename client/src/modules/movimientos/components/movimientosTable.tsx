@@ -22,7 +22,7 @@ interface MovimientosTableProps {
   onTypeFilterChange: (value: "ALL" | "INGRESO" | "GASTO") => void;
   categoryFilter: number | "ALL";
   onCategoryFilterChange: (value: number | "ALL") => void;
-  expenseTotal: number;
+  totalAmount: number;
   creating: boolean;
   createError: string;
   onCreateMovement: (payload: CreateTransactionBody) => Promise<void>;
@@ -56,7 +56,7 @@ export default function MovimientosTable({
   onTypeFilterChange,
   categoryFilter,
   onCategoryFilterChange,
-  expenseTotal,
+  totalAmount,
   creating,
   createError,
   onCreateMovement,
@@ -290,8 +290,12 @@ export default function MovimientosTable({
               <td colSpan={5} className="px-3 py-3 text-2xl font-medium text-muted-foreground">
                 {transactions.length} movimientos
               </td>
-              <td className="px-3 py-3 text-right text-4xl font-semibold tracking-tight">
-                {currency(expenseTotal)}
+              <td
+                className={`px-3 py-3 text-right text-4xl font-semibold tracking-tight ${
+                  totalAmount > 0 ? "text-emerald-600" : totalAmount < 0 ? "text-rose-600" : ""
+                }`}
+              >
+                {currency(totalAmount)}
               </td>
             </tr>
           </tfoot>

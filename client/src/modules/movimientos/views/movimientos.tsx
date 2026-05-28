@@ -15,7 +15,7 @@ export default function Movimientos() {
     setTypeFilter,
     categoryFilter,
     setCategoryFilter,
-    expenseTotal,
+    totalAmount,
     accountMap,
     categoryMap,
     creating,
@@ -50,7 +50,7 @@ export default function Movimientos() {
           onTypeFilterChange={setTypeFilter}
           categoryFilter={categoryFilter}
           onCategoryFilterChange={setCategoryFilter}
-          expenseTotal={expenseTotal}
+          totalAmount={totalAmount}
           creating={creating}
           createError={createError}
           onCreateMovement={addMovement}
