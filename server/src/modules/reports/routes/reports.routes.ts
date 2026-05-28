@@ -9,3 +9,9 @@ reportsRouter.use(authenticateJWT);
 reportsRouter.get("/summary", reportsController.summary);
 
 reportsRouter.get("/spending-by-category", reportsController.spendingByCategory);
+
+reportsRouter.get("/monthly-expenses", reportsController.monthlyExpenses);
+
+reportsRouter.get("/spending-by-day", reportsController.spendingByDay);
+
+reportsRouter.get("/top-expenses", reportsController.topExpenses);

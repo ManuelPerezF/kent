@@ -12,6 +12,12 @@ export const createSubscriptionBodySchema = z.object({
 
 export type CreateSubscriptionBody = z.infer<typeof createSubscriptionBodySchema>;
 
+export const updateSubscriptionBodySchema = z.object({
+  active: z.boolean(),
+});
+
+export type UpdateSubscriptionBody = z.infer<typeof updateSubscriptionBodySchema>;
+
 export const subscriptionSelectPublic = {
   id: true,
   userId: true,

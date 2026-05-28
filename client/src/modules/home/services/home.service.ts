@@ -46,11 +46,21 @@ function getPreviousWeekRange(reference = new Date()) {
   return { from, to };
 }
 
+function getCurrentMonthRange(reference = new Date()) {
+  const from = new Date(reference.getFullYear(), reference.getMonth(), 1);
+  from.setHours(0, 0, 0, 0);
+
+  const to = new Date(reference.getFullYear(), reference.getMonth() + 1, 0);
+  to.setHours(23, 59, 59, 999);
+
+  return { from, to };
+}
+
 function getUpcomingChargesRange(reference = new Date()) {
   const from = new Date(reference);
   from.setHours(0, 0, 0, 0);
 
-  const to = new Date(reference.getFullYear(), reference.getMonth() + 1, 0);
+  const to = new Date(reference.getFullYear(), reference.getMonth() + 3, 0);
   to.setHours(23, 59, 59, 999);
 
   return { from, to };
@@ -119,6 +129,27 @@ export async function fetchSpendingByCategory(
 
   if (!response.ok) {
     throw new Error(result.message || "No se pudo cargar el gasto por categoria.");
+  }
+
+  return result;
+}
+
+export async function fetchSpendingByDay(from: Date, to: Date) {
+  const params = new URLSearchParams({
+    from: from.toISOString(),
+    to: to.toISOString(),
+  });
+
+  const response = await fetch(`${API_URL}/api/reports/spending-by-day?${params}`, {
+    headers: {
+      Authorization: `Bearer ${authStorage.getToken()}`,
+    },
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "No se pudo cargar el gasto por dia.");
   }
 
   return result;
@@ -198,14 +229,18 @@ export async function fetchHomeDashboard(): Promise<HomeDashboardData> {
   const currentWeek = getWeekRange();
   const previousWeek = getPreviousWeekRange();
 
-  const [current, previous, upcoming, spendingByCategory, accounts, categories] = await Promise.all([
-    fetchReportsSummary(currentWeek.from, currentWeek.to),
-    fetchReportsSummary(previousWeek.from, previousWeek.to),
-    fetchUpcomingSubscriptions(5),
-    fetchSpendingByCategory(currentWeek.from, currentWeek.to),
-    fetchAccounts(),
-    fetchCategories(),
-  ]);
+  const currentMonth = getCurrentMonthRange();
+
+  const [current, previous, upcoming, spendingByCategory, spendingByDay, accounts, categories] =
+    await Promise.all([
+      fetchReportsSummary(currentWeek.from, currentWeek.to),
+      fetchReportsSummary(previousWeek.from, previousWeek.to),
+      fetchUpcomingSubscriptions(5),
+      fetchSpendingByCategory(currentMonth.from, currentMonth.to),
+      fetchSpendingByDay(currentMonth.from, currentMonth.to),
+      fetchAccounts(),
+      fetchCategories(),
+    ]);
 
   const income = current.income.total;
   const expense = current.expense.total;
@@ -223,8 +258,13 @@ export async function fetchHomeDashboard(): Promise<HomeDashboardData> {
       expenseTrend: formatTrend(expense, prevExpense),
       balanceTrend: formatTrend(balance, prevBalance),
     },
+    recurring: {
+      total: current.recurring.total,
+      count: current.recurring.count,
+    },
     upcoming,
     spendingByCategory,
+    spendingByDay,
     accounts,
     categories,
   };

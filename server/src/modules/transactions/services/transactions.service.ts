@@ -4,6 +4,7 @@ import {
   ValidationError,
 } from "../../../shared/errors/appError.js";
 import { prisma } from "../../../shared/db/prisma.js";
+import { computeAccountBalance } from "../../../shared/utils/accountBalance.js";
 import {
   transactionSelectPublic,
   type CreateTransactionBody,
@@ -11,17 +12,12 @@ import {
   type Transaction,
 } from "../models/transactions.model.js";
 
-function isWithinBudgetPeriod(date: Date, startDate: Date, endDate: Date): boolean {
-  return date >= startDate && date <= endDate;
-}
-
 /** Lógica de negocio y acceso a datos de transacciones. */
 export const transactionsService = {
   async list(userId: number, query: ListTransactionsQuery = {}): Promise<Transaction[]> {
     return prisma.transaction.findMany({
       where: {
         userId,
-        ...(query.budgetId !== undefined ? { budgetId: query.budgetId } : {}),
         ...(query.type !== undefined ? { type: query.type } : {}),
         ...(query.from !== undefined && query.to !== undefined
           ? { occurredAt: { gte: query.from, lte: query.to } }
@@ -35,11 +31,23 @@ export const transactionsService = {
   async create(userId: number, data: CreateTransactionBody): Promise<Transaction> {
     const account = await prisma.account.findFirst({
       where: { id: data.accountId, userId },
-      select: { id: true },
+      select: {
+        id: true,
+        initialBalance: true,
+        transactions: { select: { type: true, amount: true } },
+      },
     });
 
     if (!account) {
       throw new NotFoundError("Cuenta no encontrada");
+    }
+
+    const accountBalance = computeAccountBalance(account.initialBalance, account.transactions);
+
+    if (data.type === "GASTO" && accountBalance < data.amount) {
+      throw new ValidationError(
+        `Saldo insuficiente en la cuenta. Disponible: ${accountBalance.toFixed(2)}`,
+      );
     }
 
     const category = await prisma.category.findFirst({
@@ -55,29 +63,6 @@ export const transactionsService = {
       throw new ValidationError("La categoría no corresponde al tipo de movimiento");
     }
 
-    if (data.type === "INGRESO" && data.budgetId !== undefined) {
-      throw new ValidationError("Un ingreso no puede ligarse a un presupuesto");
-    }
-
-    if (data.budgetId !== undefined) {
-      if (data.type !== "GASTO") {
-        throw new ValidationError("Solo un gasto puede ligarse a un presupuesto");
-      }
-
-      const budget = await prisma.budget.findFirst({
-        where: { id: data.budgetId, userId },
-        select: { id: true, startDate: true, endDate: true },
-      });
-
-      if (!budget) {
-        throw new NotFoundError("Presupuesto no encontrado");
-      }
-
-      if (!isWithinBudgetPeriod(data.occurredAt, budget.startDate, budget.endDate)) {
-        throw new ValidationError("La fecha del gasto debe estar dentro del periodo del presupuesto");
-      }
-    }
-
     try {
       const base = {
         userId,
@@ -89,14 +74,7 @@ export const transactionsService = {
       };
 
       return await prisma.transaction.create({
-        data:
-          data.note === undefined
-            ? data.budgetId === undefined
-              ? base
-              : { ...base, budgetId: data.budgetId }
-            : data.budgetId === undefined
-              ? { ...base, note: data.note }
-              : { ...base, note: data.note, budgetId: data.budgetId },
+        data: data.note === undefined ? base : { ...base, note: data.note },
         select: transactionSelectPublic,
       });
     } catch {

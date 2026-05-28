@@ -8,14 +8,6 @@ import type { CreateTransactionBody, ListTransactionsQuery } from "../models/tra
 function parseListQuery(req: Request): ListTransactionsQuery {
   const query: ListTransactionsQuery = {};
 
-  if (req.query.budgetId !== undefined) {
-    const budgetId = Number(req.query.budgetId);
-    if (!Number.isInteger(budgetId) || budgetId <= 0) {
-      throw new ValidationError("budgetId inválido");
-    }
-    query.budgetId = budgetId;
-  }
-
   if (req.query.type !== undefined) {
     if (req.query.type !== "INGRESO" && req.query.type !== "GASTO") {
       throw new ValidationError("type debe ser INGRESO o GASTO");

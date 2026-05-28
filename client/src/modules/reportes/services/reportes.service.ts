@@ -1,25 +1,23 @@
 import { authStorage } from "@/modules/auth/lib/authStorage";
 import { API_URL } from "@/shared/utils/config";
 
-import type { CategorySpendingItem, ReportsSummaryResponse } from "../types/reportes.types";
+import type { DateRange } from "../lib/reportPeriod";
+import type {
+  CategorySpendingItem,
+  MonthlyExpenseItem,
+  ReportsSummaryResponse,
+  TopExpenseItem,
+} from "../types/reportes.types";
 
-function monthRange(): { from: Date; to: Date } {
-  const now = new Date();
-  const from = new Date(now.getFullYear(), now.getMonth(), 1);
-  from.setHours(0, 0, 0, 0);
-  const to = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-  to.setHours(23, 59, 59, 999);
-  return { from, to };
+function rangeParams(range: DateRange) {
+  return new URLSearchParams({
+    from: range.from.toISOString(),
+    to: range.to.toISOString(),
+  });
 }
 
-export async function fetchReportsSummary(): Promise<ReportsSummaryResponse> {
-  const { from, to } = monthRange();
-  const params = new URLSearchParams({
-    from: from.toISOString(),
-    to: to.toISOString(),
-  });
-
-  const response = await fetch(`${API_URL}/api/reports/summary?${params}`, {
+export async function fetchReportsSummary(range: DateRange): Promise<ReportsSummaryResponse> {
+  const response = await fetch(`${API_URL}/api/reports/summary?${rangeParams(range)}`, {
     headers: {
       Authorization: `Bearer ${authStorage.getToken()}`,
     },
@@ -34,14 +32,49 @@ export async function fetchReportsSummary(): Promise<ReportsSummaryResponse> {
   return result;
 }
 
-export async function fetchSpendingByCategory(): Promise<CategorySpendingItem[]> {
-  const { from, to } = monthRange();
-  const params = new URLSearchParams({
-    from: from.toISOString(),
-    to: to.toISOString(),
-  });
+export async function fetchSpendingByCategory(range: DateRange): Promise<CategorySpendingItem[]> {
+  const response = await fetch(
+    `${API_URL}/api/reports/spending-by-category?${rangeParams(range)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${authStorage.getToken()}`,
+      },
+    },
+  );
 
-  const response = await fetch(`${API_URL}/api/reports/spending-by-category?${params}`, {
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "No se pudo cargar el gasto por categoria.");
+  }
+
+  return result;
+}
+
+export async function fetchMonthlyExpenses(range: DateRange): Promise<MonthlyExpenseItem[]> {
+  const response = await fetch(
+    `${API_URL}/api/reports/monthly-expenses?${rangeParams(range)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${authStorage.getToken()}`,
+      },
+    },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "No se pudo cargar el gasto mensual.");
+  }
+
+  return result;
+}
+
+export async function fetchTopExpenses(range: DateRange, limit = 5): Promise<TopExpenseItem[]> {
+  const params = rangeParams(range);
+  params.set("limit", String(limit));
+
+  const response = await fetch(`${API_URL}/api/reports/top-expenses?${params}`, {
     headers: {
       Authorization: `Bearer ${authStorage.getToken()}`,
     },
@@ -50,7 +83,7 @@ export async function fetchSpendingByCategory(): Promise<CategorySpendingItem[]>
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(result.message || "No se pudo cargar el gasto por categoria.");
+    throw new Error(result.message || "No se pudieron cargar los movimientos principales.");
   }
 
   return result;

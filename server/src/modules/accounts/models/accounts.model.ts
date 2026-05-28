@@ -20,3 +20,5 @@ export const accountSelectPublic = {
 } as const;
 
 export type Account = Prisma.AccountGetPayload<{ select: typeof accountSelectPublic }>;
+
+export type AccountWithBalance = Account & { balance: number };

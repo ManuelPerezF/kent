@@ -40,6 +40,28 @@ export async function createSubscription(data: CreateSubscriptionBody): Promise<
   return result;
 }
 
+export async function updateSubscriptionActive(
+  id: number,
+  active: boolean,
+): Promise<Subscription> {
+  const response = await fetch(`${API_URL}/api/subscriptions/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authStorage.getToken()}`,
+    },
+    body: JSON.stringify({ active }),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "No se pudo actualizar la suscripcion.");
+  }
+
+  return result;
+}
+
 export async function listCategories(): Promise<Category[]> {
   const response = await fetch(`${API_URL}/api/categories`, {
     headers: {

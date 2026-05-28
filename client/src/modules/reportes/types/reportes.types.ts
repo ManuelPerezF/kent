@@ -19,6 +19,21 @@ export interface CategorySpendingItem {
   categoryName: string;
   color: string | null;
   spent: number;
-  limit: number | null;
-  progressPct: number | null;
+}
+
+export interface MonthlyExpenseItem {
+  year: number;
+  month: number;
+  label: string;
+  total: number;
+}
+
+export interface TopExpenseItem {
+  id: number;
+  amount: number;
+  occurredAt: string;
+  note: string | null;
+  categoryName: string;
+  categoryColor: string | null;
+  accountName: string;
 }

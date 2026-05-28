@@ -5,7 +5,6 @@ export interface Transaction {
   userId: number;
   accountId: number;
   categoryId: number;
-  budgetId: number | null;
   type: TransactionType;
   amount: number;
   occurredAt: string;
@@ -18,7 +17,6 @@ export interface Category {
   name: string;
   kind: TransactionType;
   color: string | null;
-  monthlyLimit: number | null;
 }
 
 export interface Account {
@@ -27,6 +25,7 @@ export interface Account {
   name: string;
   type: "EFECTIVO" | "TARJETA";
   initialBalance: number;
+  balance: number;
 }
 
 export interface CreateTransactionBody {
@@ -36,5 +35,4 @@ export interface CreateTransactionBody {
   amount: number;
   occurredAt: string;
   note?: string;
-  budgetId?: number;
 }

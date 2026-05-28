@@ -28,8 +28,6 @@ export interface CategorySpendingItem {
   categoryName: string;
   color: string | null;
   spent: number;
-  limit: number | null;
-  progressPct: number | null;
 }
 
 export interface HomeAccountOption {
@@ -53,10 +51,23 @@ export interface HomeSnapshot {
   balanceTrend: string;
 }
 
+export interface HomeRecurringSummary {
+  total: number;
+  count: number;
+}
+
+export interface DailyExpenseItem {
+  date: string;
+  label: string;
+  total: number;
+}
+
 export interface HomeDashboardData {
   snapshot: HomeSnapshot;
+  recurring: HomeRecurringSummary;
   upcoming: UpcomingSubscription[];
   spendingByCategory: CategorySpendingItem[];
+  spendingByDay: DailyExpenseItem[];
   accounts: HomeAccountOption[];
   categories: HomeCategoryOption[];
 }

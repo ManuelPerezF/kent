@@ -4,6 +4,7 @@ export interface Account {
   name: string;
   type: "EFECTIVO" | "TARJETA";
   initialBalance: number;
+  balance: number;
 }
 
 export interface CreateAccountBody {

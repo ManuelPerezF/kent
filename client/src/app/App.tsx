@@ -1,12 +1,13 @@
 import { createHashRouter, Navigate, RouterProvider } from "react-router-dom";
 
+import RequireAuth from "@/modules/auth/components/require-auth";
 import Login from "@/modules/auth/views/login";
 import Home from "@/modules/home/views/home";
 import Movimientos from "@/modules/movimientos/views/movimientos";
-import Presupuestos from "@/modules/presupuestos/views/presupuestos";
 import Reportes from "@/modules/reportes/views/reportes";
 import Suscripciones from "@/modules/suscripciones/views/suscripciones";
 import Cuentas from "@/modules/cuentas/views/cuentas";
+import Categorias from "@/modules/categorias/views/categorias";
 
 const router = createHashRouter([
   {
@@ -22,29 +23,34 @@ const router = createHashRouter([
     element: <Login />,
   },
   {
-    path: "/home",
-    element: <Home />,
+    element: <RequireAuth />,
+    children: [
+      {
+        path: "/home",
+        element: <Home />,
+      },
+      {
+        path: "/movimientos",
+        element: <Movimientos />,
+      },
+      {
+        path: "/reportes",
+        element: <Reportes />,
+      },
+      {
+        path: "/suscripciones",
+        element: <Suscripciones />,
+      },
+      {
+        path: "/cuentas",
+        element: <Cuentas />,
+      },
+      {
+        path: "/categorias",
+        element: <Categorias />,
+      },
+    ],
   },
-  {
-    path: "/movimientos",
-    element: <Movimientos />,
-  },
-  {
-    path: "/presupuestos",
-    element: <Presupuestos />,
-  },
-  {
-    path: "/reportes",
-    element: <Reportes />,
-  },
-  {
-    path: "/suscripciones",
-    element: <Suscripciones />,
-  },
-  {
-    path: "/cuentas",
-    element: <Cuentas />,
-  }
 ]);
 
 export default function App() {

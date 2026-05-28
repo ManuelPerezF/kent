@@ -2,7 +2,18 @@ import type { NextFunction, Request, Response } from "express";
 import { ValidationError } from "../../../shared/errors/appError.js";
 import type { AuthenticatedRequest } from "../../../shared/middlewares/auth.middleware.js";
 import { subscriptionsService } from "../services/subscriptions.service.js";
-import type { CreateSubscriptionBody } from "../models/subscriptions.model.js";
+import type {
+  CreateSubscriptionBody,
+  UpdateSubscriptionBody,
+} from "../models/subscriptions.model.js";
+
+function parseSubscriptionId(param: string): number {
+  const id = Number(param);
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new ValidationError("ID de suscripción inválido");
+  }
+  return id;
+}
 
 function parseUpcomingLimit(req: Request): number {
   if (req.query.limit === undefined) {
@@ -36,6 +47,21 @@ export const subscriptionsController = {
         req.body as CreateSubscriptionBody,
       );
       res.status(201).json(subscription);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async update(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { sub: userId } = (req as AuthenticatedRequest).user;
+      const subscriptionId = parseSubscriptionId(String(req.params.id ?? ""));
+      const subscription = await subscriptionsService.update(
+        userId,
+        subscriptionId,
+        req.body as UpdateSubscriptionBody,
+      );
+      res.status(200).json(subscription);
     } catch (error) {
       next(error);
     }
