@@ -39,7 +39,7 @@ function buildHeaderCopy(data: HomeDashboardData) {
   if (topCategory && data.snapshot.expense > 0) {
     return {
       title: `Resumen de ${month}`,
-      description: `Llevas ${currency(data.snapshot.expense)} en gastos esta semana. Tu categoria principal es ${topCategory.categoryName} (${currency(topCategory.spent)}).`,
+      description: `Llevas ${currency(data.snapshot.expense)} en gastos este mes. Tu categoria principal es ${topCategory.categoryName} (${currency(topCategory.spent)}).`,
     };
   }
 

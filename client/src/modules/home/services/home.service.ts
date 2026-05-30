@@ -12,38 +12,12 @@ import type {
 
 function formatTrend(current: number, previous: number): string {
   if (previous === 0) {
-    return current === 0 ? "Sin movimientos la semana pasada" : "Sin base de comparacion";
+    return current === 0 ? "Sin movimientos el mes pasado" : "Sin base de comparacion";
   }
 
   const pct = Math.round(((current - previous) / previous) * 100);
   const sign = pct > 0 ? "+" : "";
-  return `${sign}${pct}% frente a la semana pasada`;
-}
-
-function getWeekRange(reference = new Date()) {
-  const day = reference.getDay();
-  const diffToMonday = day === 0 ? -6 : 1 - day;
-
-  const from = new Date(reference);
-  from.setDate(reference.getDate() + diffToMonday);
-  from.setHours(0, 0, 0, 0);
-
-  const to = new Date(from);
-  to.setDate(from.getDate() + 6);
-  to.setHours(23, 59, 59, 999);
-
-  return { from, to };
-}
-
-function getPreviousWeekRange(reference = new Date()) {
-  const current = getWeekRange(reference);
-  const from = new Date(current.from);
-  from.setDate(from.getDate() - 7);
-
-  const to = new Date(current.to);
-  to.setDate(to.getDate() - 7);
-
-  return { from, to };
+  return `${sign}${pct}% frente al mes pasado`;
 }
 
 function getCurrentMonthRange(reference = new Date()) {
@@ -51,6 +25,16 @@ function getCurrentMonthRange(reference = new Date()) {
   from.setHours(0, 0, 0, 0);
 
   const to = new Date(reference.getFullYear(), reference.getMonth() + 1, 0);
+  to.setHours(23, 59, 59, 999);
+
+  return { from, to };
+}
+
+function getPreviousMonthRange(reference = new Date()) {
+  const from = new Date(reference.getFullYear(), reference.getMonth() - 1, 1);
+  from.setHours(0, 0, 0, 0);
+
+  const to = new Date(reference.getFullYear(), reference.getMonth(), 0);
   to.setHours(23, 59, 59, 999);
 
   return { from, to };
@@ -226,15 +210,13 @@ export async function createQuickExpense(payload: QuickExpensePayload): Promise<
 }
 
 export async function fetchHomeDashboard(): Promise<HomeDashboardData> {
-  const currentWeek = getWeekRange();
-  const previousWeek = getPreviousWeekRange();
-
   const currentMonth = getCurrentMonthRange();
+  const previousMonth = getPreviousMonthRange();
 
   const [current, previous, upcoming, spendingByCategory, spendingByDay, accounts, categories] =
     await Promise.all([
-      fetchReportsSummary(currentWeek.from, currentWeek.to),
-      fetchReportsSummary(previousWeek.from, previousWeek.to),
+      fetchReportsSummary(currentMonth.from, currentMonth.to),
+      fetchReportsSummary(previousMonth.from, previousMonth.to),
       fetchUpcomingSubscriptions(5),
       fetchSpendingByCategory(currentMonth.from, currentMonth.to),
       fetchSpendingByDay(currentMonth.from, currentMonth.to),
